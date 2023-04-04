@@ -1,5 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>This a content</h1>
+    <div class="page-content bg-white">
+        @include('banner')
+        @include('books')
+    </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/order-controller.js') }}"></script>
+@endpush

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,9 +13,9 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function show(Request $request): View
     {
-        return view('profile.edit', [
+        return view('dashboard.profile.profile', [
             'user' => $request->user(),
         ]);
     }
@@ -24,26 +23,43 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $path = null;
+        $file = $request->file('profile');
+        if (isset($file)) {
+            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('uploads/profiles', $filename, 'public');
+            $user->profile = $path;
         }
 
-        $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+
+        $user->update([
+            'name' => $user->name,
+            'email' => $user->email,
+            'profile' => $user->profile
+        ]);
+
+        return ['message' => 'پروفایل با موفقیت آپدیت شد', 'user' => ['name' => $user->name, 'email' => $user->email, 'profile' => $user->profile]];
+        // return Redirect::route('profile')->with('message', $path);
     }
 
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse|string
     {
         $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current-password'],
+            'password' => ['required', 'current_password'],
+        ], [
+            'password.current_password' => 'رمزعبور وارد شده نادرست است'
         ]);
 
         $user = $request->user();

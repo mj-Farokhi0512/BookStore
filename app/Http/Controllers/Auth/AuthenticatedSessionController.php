@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
@@ -25,6 +26,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        $status = User::where('email', $request->input('email'))->value('status');
+        if (!$status) {
+            return redirect()->intended(route('login'))->with('status', 'این کاربری مسدود است');
+        }
         $request->authenticate();
 
         $request->session()->regenerate();

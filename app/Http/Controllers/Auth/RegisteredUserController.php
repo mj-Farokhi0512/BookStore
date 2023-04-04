@@ -10,7 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -28,13 +28,14 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+
     public function store(Request $request): RedirectResponse
     {
         $request->validate(
             [
-                'name' => 'bail|required|string|max:255|regex:/^[a-zA-Z0-9_-]{3,16}$/',
-                'email' => 'bail|required|string|email|max:255|unique:' . User::class . '|regex:/^[a-zA-Z0-9_-]{3,16}$/',
-                'password' => 'bail|required|string|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/',
+                'name' => 'required|string|max:255|regex:/^[a-zA-Z0-9_-]{3,16}$/',
+                'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($request->user() ? $request->user()->id : null, 'id')->whereNull('deleted_at'), 'regex: /^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})$/'],
+                'password' => 'required|string|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/',
             ],
             [
                 'name.regex' => 'نام وارد شده معتبر نیست!',

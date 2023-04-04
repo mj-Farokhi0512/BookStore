@@ -5,6 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -12,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -49,8 +51,18 @@ class User extends Authenticatable
     //     return $this->belongsTo(Role::class);
     // }
 
-    public function books(): BelongsToMany
+    //    public function roles(): BelongsToMany
+    //    {
+    //        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id');
+    //    }
+
+    public function books(): HasMany
     {
-        return $this->belongsToMany(Book::class, 'user_books');
+        return $this->hasMany(Book::class, 'creator');
+    }
+
+    public function orders(): BelongsToMany
+    {
+        return $this->belongsToMany(Book::class, 'user_books')->using(UserBook::class)->withPivot('id', 'number', 'paid', 'deleted_at')->withTimestamps();
     }
 }

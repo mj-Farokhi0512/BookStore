@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
+
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -27,8 +29,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'bail|required|string|email|regex:/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})$/',
-            'password' => 'bail|required|string|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/',
+            'email' => 'required|string|email|regex:/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})$/',
+            'password' => 'required|string|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/',
         ];
     }
 
@@ -57,6 +59,7 @@ class LoginRequest extends FormRequest
         return [
             'email.regex' => 'ایمیل وارد شده معتبر نیست',
             'password.regex' => 'پسورد وارد شده نامعتبر است!',
+            'status' => 'این کاربری مسدود شده است'
         ];
     }
 

@@ -33,7 +33,7 @@ return [
     ],
     'boolean' => 'The :attribute field must be true or false.',
     'confirmed' => 'فیلد :attribute مطابقت ندارد.',
-    'current_password' => 'The password is incorrect.',
+    'current_password' => 'رمزعبور شما اشتباه است.',
     'date' => 'The :attribute field must be a valid date.',
     'date_equals' => 'The :attribute field must be a date equal to :date.',
     'date_format' => 'The :attribute field must match the format :format.',
@@ -51,7 +51,7 @@ return [
     'ends_with' => 'The :attribute field must end with one of the following: :values.',
     'enum' => 'The selected :attribute is invalid.',
     'exists' => 'The selected :attribute is invalid.',
-    'file' => 'The :attribute field must be a file.',
+    'file' => 'فیلد :attribute باید یک فایل باشد',
     'filled' => 'The :attribute field must have a value.',
     'gt' => [
         'array' => 'The :attribute field must have more than :value items.',
@@ -183,7 +183,8 @@ return [
         'name' => 'نام',
         'email' => 'ایمیل',
         'password' => 'رمزعبور',
-        'password_confirmation' => 'تکرار رمزعبور'
+        'password_confirmation' => 'تکرار رمزعبور',
+        'image' => 'عکس'
     ],
 
 ];

@@ -97,9 +97,10 @@ return [
     |
     */
 
+    'host' => '192.168.1.1',
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'mohammadjavad@gmail.com'),
+        'name' => env('MAIL_FROM_NAME', 'Mohammad Javad'),
     ],
 
     /*
