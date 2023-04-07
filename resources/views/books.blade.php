@@ -6,8 +6,8 @@
         </div>
         <div class="container">
             <div class="row">
-                @foreach($books as $book)
-                    <x-book.book-item :book="$book"/>
+                @foreach ($books as $book)
+                    <x-book.book-item :book="$book" />
                 @endforeach
             </div>
         </div>

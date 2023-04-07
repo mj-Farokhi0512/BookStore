@@ -24,9 +24,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    $books = Book::all();
+    $books = DB::table('books')->whereNull('deleted_at')->leftJoin('likes', 'books.id', '=', 'likes.book_id')->get();
     return view('index', ['books' => $books]);
 })->name('home');
+
+Route::get('/book/{id}', function ($id) {
+    $book = Book::find($id);
+    return view('book', ['book' => $book]);
+})->name('books.detail');
 
 Route::get('/dashboard', function () {
     return view('dashboard.index');
@@ -51,6 +56,8 @@ Route::middleware(['auth', 'verified', 'role:MANAGER|ADMIN'])->group(function ()
     Route::delete('/books/delete/{id}', [BookController::class, 'delete'])->name('books.delete');
     Route::get('/books/updateStatus/{id}', [BookController::class, 'updateStatus'])->name('books.updateStatus');
     Route::post('/books/search', [BookController::class, 'search'])->name('books.search');
+    Route::get('/books/report/pdf', [BookController::class, 'reportPdf'])->name('books.reportPdf');
+    Route::get('/books/report/excel', [BookController::class, 'reportExcel'])->name('books.reportExcel');
 
     Route::get('/tag_category', function (Request $request): \Illuminate\View\View {
         $cates = Category::query();
@@ -103,12 +110,14 @@ Route::middleware(['auth', 'verified', 'role:MANAGER|ADMIN'])->group(function ()
 });
 
 Route::middleware(['auth', 'verified', 'role:USER'])->group(function () {
-    Route::get('/cart/create/{id}', [UserBookController::class, 'create'])->name('cart.create');
+    Route::post('/cart/create', [UserBookController::class, 'create'])->name('cart.create');
     Route::get('/cart', [UserBookController::class, 'show'])->name('cart');
     Route::post('/cart/update', [UserBookController::class, 'update'])->name('cart.update');
     Route::delete('/cart/delete/{id}', [UserBookController::class, 'delete'])->name('cart.delete');
     Route::put('/cart/paid/{id}', [UserBookController::class, 'paid'])->name('cart.paid');
     Route::get('/paids', [UserBookController::class, 'paids'])->name('paids');
+    Route::get('/faverites', [UserBookController::class, 'faverites'])->name('faverites');
+    Route::post('/faverites/create', [UserBookController::class, 'createFave'])->name('faverites.create');
 });
 
 Route::middleware('auth')->group(function () {

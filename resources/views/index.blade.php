@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@push('head')
+    <meta name="csrf_token" content="{{ csrf_token() }}" />
+@endpush
 @section('content')
     <div class="page-content bg-white">
         @include('banner')

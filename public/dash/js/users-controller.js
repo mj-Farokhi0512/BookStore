@@ -11,10 +11,15 @@ $(document).ready(function () {
 
 $(document).on("click", "#users_table .delete-btn", function (event) {
     const user = $(this).closest("tr");
-    const id = user.data("id");
+    let id = user.data("id");
+    let flag = false;
+
+    if (!id) {
+        id = user.prev().data("id");
+        flag = true;
+    }
 
     console.log(id);
-
     Swal.fire({
         title: "از حذف این کاربر مطمئن هستید؟",
         icon: "warning",
@@ -33,7 +38,12 @@ $(document).on("click", "#users_table .delete-btn", function (event) {
                     id,
                 },
                 success: function (response) {
-                    user.remove();
+                    if (flag) {
+                        user.prev().remove();
+                        user.remove();
+                    } else {
+                        user.remove();
+                    }
 
                     Swal.fire({
                         title: "کاربر با موفقیت حذف شد",
@@ -92,13 +102,15 @@ $(document).on("submit", "#edit_user form", function (event) {
                 password: password.val(),
             },
             success: function (response) {
-                $('#edit_user').modal('hide');
-                $('#alert_box').append(success_alert(response.message));
-                $(`#users_table tr[data-id="${response.user.id}"] td:nth-of-type(2)`).text(response.user.name);
+                $("#edit_user").modal("hide");
+                $("#alert_box").append(success_alert(response.message));
+                $(
+                    `#users_table tr[data-id="${response.user.id}"] td:nth-of-type(2)`
+                ).text(response.user.name);
             },
             error: function (error) {
-                $('#edit_user').modal('hide');
-                $('#alert_box').append(error_alert(response.message));
+                $("#edit_user").modal("hide");
+                $("#alert_box").append(error_alert(response.message));
             },
         });
     }
@@ -106,122 +118,145 @@ $(document).on("submit", "#edit_user form", function (event) {
 
 let previous = null;
 
-$(document).on('focus', '#users_table .role_select', function (event) {
-    previous = event.target.value;
-}).on('change', '#users_table .role_select', function (event) {
-    const roleId = event.target.value;
-    const userId = $(this).closest('tr').data('id');
-
-    const thisSelect = $(this);
-    $.ajax({
-        method: "POST",
-        url: '/users/update-role',
-        data: {
-            _token,
-            roleId,
-            userId,
-            prevRole: previous
-        },
-        success: function (response) {
-            Swal.fire({
-                title: 'نقش کاربر باموفقیت تغییر یافت',
-                icon: 'success',
-                confirmButtonColor: '#7367f0',
-                confirmButtonText: 'باشه'
-            });
-        },
-        error: function (error) {
-            thisSelect.val(previous);
-            Swal.fire({
-                title: 'نقش کاربر تغییر نیافت',
-                icon: 'error',
-                confirmButtonColor: '#7367f0',
-                confirmButtonText: 'باشه'
-            });
-        }
+$(document)
+    .on("focus", "#users_table .role_select", function (event) {
+        previous = event.target.value;
     })
-});
+    .on("change", "#users_table .role_select", function (event) {
+        const roleId = event.target.value;
+        const userId = $(this).closest("tr").data("id");
 
+        const thisSelect = $(this);
+        $.ajax({
+            method: "POST",
+            url: "/users/update-role",
+            data: {
+                _token,
+                roleId,
+                userId,
+                prevRole: previous,
+            },
+            success: function (response) {
+                Swal.fire({
+                    title: "نقش کاربر باموفقیت تغییر یافت",
+                    icon: "success",
+                    confirmButtonColor: "#7367f0",
+                    confirmButtonText: "باشه",
+                });
+            },
+            error: function (error) {
+                thisSelect.val(previous);
+                Swal.fire({
+                    title: "نقش کاربر تغییر نیافت",
+                    icon: "error",
+                    confirmButtonColor: "#7367f0",
+                    confirmButtonText: "باشه",
+                });
+            },
+        });
+    });
 
-$(document).on('change', '#users_table .status_select', function (event) {
+$(document).on("change", "#users_table .status_select", function (event) {
     // const statusId = event.target.value;
-    const userId = $(this).closest('tr').data('id');
+    const userId = $(this).closest("tr").data("id");
 
     const thisSelect = $(this);
     $.ajax({
         method: "GET",
         url: `/users/${userId}`,
         beforeSend: function (xhr) {
-            xhr.setRequestHeader('X-CSRF-TOKEN', _token);
+            xhr.setRequestHeader("X-CSRF-TOKEN", _token);
         },
         success: function (response) {
             console.log(response);
             Swal.fire({
-                title: 'وضعیت کاربر باموفقیت تغییر یافت',
-                icon: 'success',
-                confirmButtonColor: '#7367f0',
-                confirmButtonText: 'باشه'
+                title: "وضعیت کاربر باموفقیت تغییر یافت",
+                icon: "success",
+                confirmButtonColor: "#7367f0",
+                confirmButtonText: "باشه",
             });
         },
         error: function (error) {
             console.log(error);
             Swal.fire({
-                title: 'وضعیت کاربر تغییر نیافت',
-                icon: 'error',
-                confirmButtonColor: '#7367f0',
-                confirmButtonText: 'باشه'
+                title: "وضعیت کاربر تغییر نیافت",
+                icon: "error",
+                confirmButtonColor: "#7367f0",
+                confirmButtonText: "باشه",
             });
-        }
-    })
+        },
+    });
 });
 
-$(document).on('change', '#user_search', function (event) {
+$(document).on("change", "#user_search", function (event) {
     const input = $(this);
-    const table = $('#users_table').DataTable();
+    const table = $("#users_table").DataTable();
 
     table.clear().draw();
     $.ajax({
         method: "POST",
-        url: '/users/search',
+        url: "/users/search",
         data: {
             _token,
-            search: input.val()
+            search: input.val(),
         },
         success: function (response) {
             const users = response.users;
             const roles = response.roles;
 
             users.forEach((user) => {
-                const date = new Date(user.created_at).toLocaleDateString('fa');
-                const tr = table.row.add([
-                    ` <img src="${user.profile ? `storage/${user.profile}` : 'dash/images/profile-placeholder.png'}"
+                const date = new Date(user.created_at).toLocaleDateString("fa");
+                const tr = table.row
+                    .add([
+                        ` <img src="${
+                            user.profile
+                                ? `storage/${user.profile}`
+                                : "dash/images/profile-placeholder.png"
+                        }"
                                 alt="Profile" class="profile-img"/>`,
-                    user.name,
-                    user.email,
-                    date,
-                    user.role_id != 2 ? `<select class="status_select">
-                                    <option value="1" ${user.status == 1 ? 'selected' : ''}>فعال</option>
-                                    <option value="0" ${user.status == 0 ? 'selected' : ''}>غیرفعال</option>
-                                </select>` : `${user.status ? 'فعال' : 'غیرفعال'}`,
-                    `
+                        user.name,
+                        user.email,
+                        date,
+                        user.role_id != 2
+                            ? `<select class="status_select">
+                                    <option value="1" ${
+                                        user.status == 1 ? "selected" : ""
+                                    }>فعال</option>
+                                    <option value="0" ${
+                                        user.status == 0 ? "selected" : ""
+                                    }>غیرفعال</option>
+                                </select>`
+                            : `${user.status ? "فعال" : "غیرفعال"}`,
+                        `
                             <select class="role_select" value="{{$user->role_id}}">
-                                    ${roles.map(role => `<option
-                                         ${role.id == user.role_id ? 'selected' : ''}>${role.name}</option>`).toString()
-                    }
+                                    ${roles
+                                        .map(
+                                            (role) => `<option
+                                         ${
+                                             role.id == user.role_id
+                                                 ? "selected"
+                                                 : ""
+                                         }>${role.name}</option>`
+                                        )
+                                        .toString()}
                              </select>
                         `,
-                    user.role_id != 2 ? `<button class="btn btn-primary edit-btn">
+                        user.role_id != 2
+                            ? `<button class="btn btn-primary edit-btn">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
                                 <button class="btn btn-danger delete-btn">
                                     <i class="fa-solid fa-trash-can"></i>
-                                </button>` : '',
-                ]).draw().node();
+                                </button>`
+                            : "",
+                    ])
+                    .draw()
+                    .node();
 
-                $(tr).data('id', user.id);
+                $(tr).data("id", user.id);
 
                 console.log(tr);
             });
-        }
+        },
     });
 });

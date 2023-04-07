@@ -77,8 +77,14 @@
             </li>
             <li class="menu-item">
                 <a href="{{ route('paids') }}" class="menu-link">
-                    <i class="menu-icon tf-icons fa-regular fa-dollar-sign"></i>
+                    <i class="menu-icon tf-icons fs-5 p-1 fa-regular fa-dollar-sign"></i>
                     <div data-i18n="پرداخت ها">پرداخت ها</div>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ route('faverites') }}" class="menu-link">
+                    <i class="menu-icon tf-icons fs-5 p-1 fa-regular fa-bookmark"></i>
+                    <div data-i18n="علاقمندی ها">علاقمندی ها</div>
                 </a>
             </li>
         @endrole

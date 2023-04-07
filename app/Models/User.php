@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,13 +15,15 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes, CascadeSoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
+
+    protected $cascadeDeletes = ['books', 'orders', 'bookmarks'];
     protected $fillable = [
         'name',
         'email',
@@ -64,5 +67,10 @@ class User extends Authenticatable
     public function orders(): BelongsToMany
     {
         return $this->belongsToMany(Book::class, 'user_books')->using(UserBook::class)->withPivot('id', 'number', 'paid', 'deleted_at')->withTimestamps();
+    }
+
+    public function bookmarks(): BelongsToMany
+    {
+        return $this->belongsToMany(Book::class, 'likes')->withTimestamps();
     }
 }

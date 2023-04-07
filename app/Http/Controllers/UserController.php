@@ -53,14 +53,14 @@ class UserController extends Controller
 
     public function updateRole(Request $request)
     {
-//        $user_role = DB::table('model_has_roles')
-//            ->where('model_id', '=', $request->userId)
-//            ->where('deleted_at', '=', null);
-//
-//        $user_role->update([
-//            'role_id' => $request->roleId
-//        ]);
-//        $user = $user_role->first();
+        //        $user_role = DB::table('model_has_roles')
+        //            ->where('model_id', '=', $request->userId)
+        //            ->where('deleted_at', '=', null);
+        //
+        //        $user_role->update([
+        //            'role_id' => $request->roleId
+        //        ]);
+        //        $user = $user_role->first();
         $user = User::find($request->get('userId'));
         $role_name = Role::find($request->get('roleId'));
         $user->syncRoles([$role_name]);

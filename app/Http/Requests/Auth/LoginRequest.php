@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class LoginRequest extends FormRequest
 {
@@ -29,7 +30,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|string|email|regex:/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})$/',
+            'email' => ['required', 'string', 'email', 'regex:/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})$/', Rule::exists('users')->whereNull('deleted_at')],
             'password' => 'required|string|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/',
         ];
     }
@@ -58,6 +59,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'email.regex' => 'ایمیل وارد شده معتبر نیست',
+            'email.exists' => 'کاربری با این ایمیل یافت نشد',
             'password.regex' => 'پسورد وارد شده نامعتبر است!',
             'status' => 'این کاربری مسدود شده است'
         ];

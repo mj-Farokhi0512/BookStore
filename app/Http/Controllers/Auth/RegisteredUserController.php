@@ -9,6 +9,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -31,7 +32,7 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $request->validate(
+        $validated = $request->validate(
             [
                 'name' => 'required|string|max:255|regex:/^[a-zA-Z0-9_-]{3,16}$/',
                 'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($request->user() ? $request->user()->id : null, 'id')->whereNull('deleted_at'), 'regex: /^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})$/'],
@@ -44,14 +45,25 @@ class RegisteredUserController extends Controller
             ]
         );
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $user = User::onlyTrashed()->where('email', $validated['email'])->first();
+
+        if (isset($user)) {
+            $user->restore();
+            $user->update([
+                'name' => $validated['name'],
+                'password' => Hash::make($validated['password']),
+            ]);
+        } else {
+
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
+            $user->assignRole('USER');
+        }
 
         event(new Registered($user));
-        $user->assignRole('USER');
 
         Auth::login($user);
 

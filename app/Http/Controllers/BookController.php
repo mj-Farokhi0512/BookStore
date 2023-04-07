@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\BookReportExcel;
 use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use App\Models\Category;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Morilog\Jalali\Jalalian;
+use Mpdf\Mpdf;
+use niklasravnsborg\LaravelPdf\Facades\Pdf;
+use Excel;
 
 class BookController extends Controller
 {
@@ -64,7 +69,7 @@ class BookController extends Controller
                 array_push($tags, $tag_id);
             }
         }
-        
+
         if (isset($rcats)) {
             foreach ($rcats as $cat) {
                 $cat_id = Category::where('name', '=', $cat->value)->first()->id;
@@ -136,5 +141,23 @@ class BookController extends Controller
         $sbooks = Book::where('name', 'like', $request->get('name') . '%')->get();
         return ['books' => $sbooks, 'editLink' => route('books.edit', '')];
     }
-}
 
+    public function reportPdf()
+    {
+
+        $books = Book::all();
+
+        $data = [
+            'books' => $books
+        ];
+
+        $pdf =  Pdf::loadView('dashboard.reports.book-pdf', $data);
+
+        return $pdf->download('book-pdf.pdf');
+    }
+
+    public function reportExcel()
+    {
+        return Excel::download(new BookReportExcel, 'book.xlsx');
+    }
+}
