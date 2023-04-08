@@ -98,4 +98,10 @@ class UserBookController extends Controller
         $faves = Auth::user()->bookmarks()->get();
         return view('dashboard.faverite.faverite', ['faves' => $faves]);
     }
+
+    public function showOrders(): View
+    {
+        $orders = DB::table('user_books')->join('users', 'user_books.user_id', '=', 'users.id')->join('books', 'books.id', '=', 'user_books.book_id')->get();
+        return view('dashboard.orders.orders');
+    }
 }

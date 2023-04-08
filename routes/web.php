@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Models\Book;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\UserBook;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -109,15 +110,16 @@ Route::middleware(['auth', 'verified', 'role:MANAGER|ADMIN'])->group(function ()
     Route::post('/categories/search', [CategoryController::class, 'search'])->name('categories.search');
 });
 
-Route::middleware(['auth', 'verified', 'role:USER'])->group(function () {
-    Route::post('/cart/create', [UserBookController::class, 'create'])->name('cart.create');
-    Route::get('/cart', [UserBookController::class, 'show'])->name('cart');
-    Route::post('/cart/update', [UserBookController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/delete/{id}', [UserBookController::class, 'delete'])->name('cart.delete');
-    Route::put('/cart/paid/{id}', [UserBookController::class, 'paid'])->name('cart.paid');
-    Route::get('/paids', [UserBookController::class, 'paids'])->name('paids');
-    Route::get('/faverites', [UserBookController::class, 'faverites'])->name('faverites');
-    Route::post('/faverites/create', [UserBookController::class, 'createFave'])->name('faverites.create');
+Route::middleware(['auth', 'verified', 'role:USER'])->controller(UserBookController::class)->group(function () {
+    Route::post('/cart/create',  'create')->name('cart.create');
+    Route::get('/cart',  'show')->name('cart');
+    Route::post('/cart/update',  'update')->name('cart.update');
+    Route::delete('/cart/delete/{id}',  'delete')->name('cart.delete');
+    Route::put('/cart/paid/{id}',  'paid')->name('cart.paid');
+    Route::get('/paids',  'paids')->name('paids');
+    Route::get('/faverites',  'faverites')->name('faverites');
+    Route::post('/faverites/create',  'createFave')->name('faverites.create');
+    Route::get('/orders', 'showOrders')->name('orders');
 });
 
 Route::middleware('auth')->group(function () {

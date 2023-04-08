@@ -58,6 +58,12 @@
                     </li>
                 </ul>
             </li>
+            <li class="menu-item">
+                <a href="javascript:void(0);" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-file-dollar"></i>
+                    <div data-i18n="سفارشات">سفارشات</div>
+                </a>
+            </li>
         @endrole
 
         @role('MANAGER')
