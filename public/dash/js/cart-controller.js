@@ -78,4 +78,34 @@ $(document)
                 $("#alert_box").append(error_alert("خطایی رخ داده"));
             },
         });
+    })
+    .on("click", "#orders_table .send-btn", function () {
+        const row = $(this).closest("tr");
+        const id = row.data("id");
+
+        Swal.fire({
+            title: "از این کار مطمئن هستید؟",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#7367f0",
+            cancelButtonColor: "#ea5455",
+            confirmButtonText: "بله",
+            cancelButtonText: "لفو",
+        }).then((rep) => {
+            if (rep.isConfirmed) {
+                $.ajax({
+                    type: "PUT",
+                    url: `/orders/sendOrder/${id}`,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader(_token);
+                    },
+                    success: function (response) {
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        $("#alert_box").append(error_alert("خطایی رخ داده"));
+                    },
+                });
+            }
+        });
     });

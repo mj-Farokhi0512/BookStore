@@ -59,7 +59,7 @@
                 </ul>
             </li>
             <li class="menu-item">
-                <a href="javascript:void(0);" class="menu-link">
+                <a href="{{ route('orders') }}" class="menu-link">
                     <i class="menu-icon tf-icons ti ti-file-dollar"></i>
                     <div data-i18n="سفارشات">سفارشات</div>
                 </a>

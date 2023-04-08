@@ -6,7 +6,7 @@
 @section('content')
     <div class="card">
         <div class="card-datatable table-responsive">
-            <table id="cart_table" class="table check-tbl">
+            <table id="orders_table" class="table check-tbl">
                 <thead>
                     <tr>
                         <th>کتاب</th>
@@ -26,18 +26,13 @@
                             <td class="product-item-name">{{ $order->name }}</td>
                             <td class="product-item-price">{{ $order->price }} تومان </td>
                             <td class="product-item-quantity">
-                                <div class="quantity btn-quantity d-flex align-items-stretch me-3">
-                                    <button class="btn btn-count-down"><i class="fa fa-minus"></i></button>
-                                    <input type="text" value="{{ $order->pivot->number }}" name="demo_vertical2"
-                                        class="quantity-input">
-                                    <button class="btn btn-count-up"><i class="fa fa-plus"></i></button>
-                                </div>
+                                {{ $order->number }}
                             </td>
-                            <td class="product-item-totle">{{ $order->price * $order->pivot->number }} تومان</td>
+                            <td class="product-item-totle">{{ $order->price * $order->number }} تومان</td>
                             <td class="">
                                 <div class="d-flex">
-                                    <button class="btn btn-primary paid-btn">پرداخت</button>
-                                    <button class="btn btn-danger delete-btn"><i class="fa fa-close"></i></button>
+                                    <button class="btn btn-primary send-btn">ارسال</button>
+                                    <button class="btn btn-danger cancel-btn">لغو</button>
                                 </div>
                             </td>
                         </tr>

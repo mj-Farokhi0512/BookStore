@@ -6,6 +6,7 @@ use App\Models\Book;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class UserBookController extends Controller
@@ -102,6 +103,17 @@ class UserBookController extends Controller
     public function showOrders(): View
     {
         $orders = DB::table('user_books')->join('users', 'user_books.user_id', '=', 'users.id')->join('books', 'books.id', '=', 'user_books.book_id')->get();
-        return view('dashboard.orders.orders');
+        return view('dashboard.orders.orders', ['orders' => $orders]);
+    }
+
+    public function sendOrder($id): array
+    {
+
+        return [];
+    }
+
+    public function cancelOrder($id): array
+    {
+        return [];
     }
 }
