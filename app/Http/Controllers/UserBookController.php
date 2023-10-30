@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
-
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+
 
 class UserBookController extends Controller
 {
@@ -100,20 +101,37 @@ class UserBookController extends Controller
         return view('dashboard.faverite.faverite', ['faves' => $faves]);
     }
 
-    public function showOrders(): View
+    public function showOrders()
     {
-        $orders = DB::table('user_books')->join('users', 'user_books.user_id', '=', 'users.id')->join('books', 'books.id', '=', 'user_books.book_id')->get();
+        $orders = DB::table('user_books')
+            ->join('users', 'user_books.user_id', '=', 'users.id')
+            ->join('books', 'user_books.book_id', '=', 'books.id');
+
+        $orders = $orders->select('users.email', 'books.name', 'books.price', 'user_books.*')
+            ->whereNull('user_books.deleted_at')
+            ->where('paid', true)
+            ->where('sended', false)
+            ->get()
+            ->groupBy('user_id');
+
         return view('dashboard.orders.orders', ['orders' => $orders]);
     }
 
     public function sendOrder($id): array
     {
 
-        return [];
+        User::find($id)->orders()->update(['sended' => true]);
+
+
+        return ['message' => 'سفارش کاربر ارسال شد', 'data' => ['id' =>  $id]];
     }
 
     public function cancelOrder($id): array
     {
-        return [];
+        User::find($id)->orders()->update([
+            'user_books.deleted_at' => now()
+        ]);
+
+        return ['message' => 'سفارش کاربر لغو شد', 'data' => ['id' => $id]];
     }
 }

@@ -9,26 +9,36 @@
             <table id="orders_table" class="table check-tbl">
                 <thead>
                     <tr>
-                        <th>کتاب</th>
-                        <th>نام کتاب</th>
-                        <th>قیمت</th>
-                        <th>تعداد</th>
+                        <th>ایمیل کاربر</th>
+                        <th>سبد خرید</th>
+                        <th>تعداد کل</th>
                         <th>جمع‌کل</th>
                         <th>عملیات</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($orders as $order)
-                        <tr data-id="{{ $order->id }}">
-                            <td class="product-item-img"><img
-                                    src="{{ $order->image ? asset('storage/' . $order->image) : asset('images/book-placeholder.jpg') }}"
-                                    alt></td>
-                            <td class="product-item-name">{{ $order->name }}</td>
-                            <td class="product-item-price">{{ $order->price }} تومان </td>
-                            <td class="product-item-quantity">
-                                {{ $order->number }}
+                    @foreach ($orders as $key => $user_order)
+                        <tr data-id="{{ $key }}">
+                            <td class="product-item-img">{{ $user_order[0]->email }}</td>
+                            <td class="product-item-name">
+                                @foreach ($user_order as $order)
+                                    {{ $order->name }} ,
+                                @endforeach
                             </td>
-                            <td class="product-item-totle">{{ $order->price * $order->number }} تومان</td>
+
+                            @php
+                                $total_number = 0;
+                                $total_price = 0;
+                                
+                                foreach ($user_order as $value) {
+                                    $total_price += $value->price + $value->number;
+                                    $total_number += $value->number;
+                                }
+                            @endphp
+                            <td class="product-item-quantity">
+                                {{ $total_number }}
+                            </td>
+                            <td class="product-item-totle">{{ $total_price }} تومان</td>
                             <td class="">
                                 <div class="d-flex">
                                     <button class="btn btn-primary send-btn">ارسال</button>
@@ -44,5 +54,6 @@
 @endsection
 
 @push('scripts')
+    <script src="{{ asset('dash/js/sweetalert.js') }}"></script>
     <script src="{{ asset('dash/js/cart-controller.js') }}"></script>
 @endpush

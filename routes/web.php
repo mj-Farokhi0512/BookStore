@@ -60,7 +60,7 @@ Route::middleware(['auth', 'verified', 'role:MANAGER|ADMIN'])->group(function ()
     Route::get('/books/report/pdf', [BookController::class, 'reportPdf'])->name('books.reportPdf');
     Route::get('/books/report/excel', [BookController::class, 'reportExcel'])->name('books.reportExcel');
     Route::get('/orders', [UserBookController::class, 'showOrders'])->name('orders');
-    Route::put('/orders/cancelOrder/{id}', [UserBookController::class, 'cancelOrder'])->name('orders.cancel');
+    Route::delete('/orders/cancelOrder/{id}', [UserBookController::class, 'cancelOrder'])->name('orders.cancel');
     Route::put('/orders/sendOrder/{id}', [UserBookController::class, 'sendOrder'])->name('orders.sendOrder');
 
     Route::get('/tag_category', function (Request $request): \Illuminate\View\View {

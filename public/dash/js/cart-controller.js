@@ -97,10 +97,48 @@ $(document)
                     type: "PUT",
                     url: `/orders/sendOrder/${id}`,
                     beforeSend: function (xhr) {
-                        xhr.setRequestHeader(_token);
+                        xhr.setRequestHeader("X-CSRF-TOKEN", _token);
                     },
                     success: function (response) {
                         console.log(response);
+                        $("#alert_box").append(
+                            success_alert("سفارش کاربر ارسال شد")
+                        );
+                        row.remove();
+                    },
+                    error: function (error) {
+                        $("#alert_box").append(error_alert("خطایی رخ داده"));
+                    },
+                });
+            }
+        });
+    })
+    .on("click", "#orders_table .cancel-btn", function () {
+        const row = $(this).closest("tr");
+        const id = row.data("id");
+
+        Swal.fire({
+            title: "از این کار مطمئن هستید؟",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#7367f0",
+            cancelButtonColor: "#ea5455",
+            confirmButtonText: "بله",
+            cancelButtonText: "لفو",
+        }).then((rep) => {
+            if (rep.isConfirmed) {
+                $.ajax({
+                    type: "DELETE",
+                    url: `/orders/cancelOrder/${id}`,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("X-CSRF-TOKEN", _token);
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        $("#alert_box").append(
+                            success_alert("سفارش کاربر لغو شد")
+                        );
+                        row.remove();
                     },
                     error: function (error) {
                         $("#alert_box").append(error_alert("خطایی رخ داده"));

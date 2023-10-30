@@ -13,14 +13,15 @@
                 <p class="title">{{ $book->author }}</p>
                 <span class="price">{{ $book->price }} تومان</span>
             </a>
-            @role('USER')
+            @role('MANAGER|ADMIN')
+            @else
                 <div data-id="{{ $book->id }}">
                     <button class="btn btn-secondary btnhover btnhover2 book-order">
                         <i class="flaticon-shopping-cart-1 m-r10"></i>
                         افزودن به سبد‌خرید
                     </button>
                     <i
-                        class="{{ $book->user_id == auth()->user()->id ? 'fa-solid' : 'fa-regular' }} fa-bookmark float-end fs-5 py-3 me-3 bookmark-btn"></i>
+                        class="{{ isset(auth()->user()->id) && $book->user_id == auth()->user()->id ? 'fa-solid' : 'fa-regular' }} fa-bookmark float-end fs-5 py-3 me-3 bookmark-btn"></i>
                 </div>
             @endrole
         </div>
